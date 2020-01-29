@@ -363,7 +363,14 @@ def text_clustering(n=30, TF=True, IDF=False, kwords=True, annotation=True):
     for val in cluster_output:
         print('{} {}'.format(*val))
 
-    sheet_name = 'Doc-clasters-TF'
+    sheet_name = 'Doc-clasters'
+
+    if TF:
+        if IDF:
+            sheet_name += '-TF-IDF'
+        else:
+            sheet_name += '-TF'
+
     Excel = win32com.client.Dispatch('Excel.Application')
     wb = Excel.Workbooks.Open(os.getcwd() + '\\Results\\Res-{}.xlsx'.format(number_of_clusters))
     sheet = wb.Worksheets(sheet_name)
