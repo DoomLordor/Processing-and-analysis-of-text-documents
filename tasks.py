@@ -282,7 +282,7 @@ def text_clustering(n=30, TF=True, IDF=False, kwords=True, annotation=True):
 
     del teachers
 
-    documents = kwords_annotation(documents, True, False)
+    documents = kwords_annotation(documents, kwords, annotation)
 
     name_documents = []
     for doc in documents:
