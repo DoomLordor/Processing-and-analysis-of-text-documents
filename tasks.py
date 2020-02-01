@@ -197,7 +197,7 @@ def var_k_means(teachers, teachers_keyword):
     return 0
 
 
-def word_word(only_kwords=False):
+def word_word(kwords=True, annotation=True):
     with open("input\\stop_word.txt") as f:
         dictionary_of_stop_words = f.read().upper().split('\n')
 
@@ -209,18 +209,9 @@ def word_word(only_kwords=False):
     for teacher in teachers:
         teacher = teacher.split(' ')
         with open("input\\{} {} {}.txt".format(*teacher[:3])) as f:
-            if only_kwords:
-                documents += f.read().split('\n')
-            else:
-                documents += re.findall(regular, f.read())
-    if only_kwords:
-        k_words_pos = list_items(documents, 'КЛЮЧЕВЫЕ СЛОВА:')
+            documents += re.findall(regular, f.read())
 
-        doc = documents.copy()
-
-        documents.clear()
-        for i in k_words_pos:
-            documents.append(doc[i+1])
+    documents = kwords_annotation(documents, kwords, annotation)
 
     documents = removing_special_characters(documents)
 
@@ -294,6 +285,11 @@ def text_clustering(n=30, TF=True, IDF=False, kwords=True, annotation=True):
                 break
         name_documents.append(name)
 
+    for i, name in enumerate(name_documents.copy()):
+        while name in name_documents[i+1:]:
+            pos = name_documents[i+1:].index(name) + i + 1
+            del name_documents[pos], documents[pos]
+
     documents = removing_special_characters(documents)
 
     keywords = partition2(documents, not_common=True)
@@ -326,7 +322,7 @@ def text_clustering(n=30, TF=True, IDF=False, kwords=True, annotation=True):
 
     keywords = profile(all_keywords, keywords)
 
-    keywords = delete_elements_certain_length(keywords, 2)
+    keywords, name_documents = delete_elements_certain_length(keywords, 2)
 
     if TF:
         if IDF:

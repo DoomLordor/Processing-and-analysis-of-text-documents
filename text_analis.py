@@ -370,16 +370,17 @@ def kwords_annotation(input_text, kwords=False, annotation=False):
 # Удаление ключевых слов, аннотаций из текста
 
 
-def delete_elements_certain_length(keywords, n):
+def delete_elements_certain_length(keywords, name_document, n):
     del_list = []
 
     for keyword in keywords:
-        if len(keyword) < n:
+        if len(delete_frequency_keyword(keyword, 0)) < n:
             del_list.append(keyword)
 
     for val in del_list:
-        keywords.remove(val)
+        pos = keywords.index(val)
+        del keywords[pos], name_document[pos]
 
-    return keywords
+    return keywords, name_document
 
 # Удаление из списка элемеентов меньше n
