@@ -326,6 +326,8 @@ def text_clustering(n=30, TF=True, IDF=False, kwords=True, annotation=True):
 
     keywords = profile(all_keywords, keywords)
 
+    keywords = delete_elements_certain_length(keywords, 2)
+
     if TF:
         if IDF:
             keywords = tfidf(keywords)

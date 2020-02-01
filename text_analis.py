@@ -368,3 +368,18 @@ def kwords_annotation(input_text, kwords=False, annotation=False):
                 input_text[i] = text[0] + '\n' + text[2] + '\n'
     return input_text
 # Удаление ключевых слов, аннотаций из текста
+
+
+def delete_elements_certain_length(keywords, n):
+    del_list = []
+
+    for keyword in keywords:
+        if len(keyword) < n:
+            del_list.append(keyword)
+
+    for val in del_list:
+        keywords.remove(val)
+
+    return keywords
+
+# Удаление из списка элемеентов меньше n
