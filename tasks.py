@@ -197,70 +197,7 @@ def var_k_means(teachers, teachers_keyword):
     return 0
 
 
-def word_word(kwords=True, annotation=True):
-    with open("input\\stop_word.txt") as f:
-        dictionary_of_stop_words = f.read().upper().split('\n')
-
-    with open("input\\list_of_teachers.txt") as f:
-        teachers = f.read().split('\n')
-
-    documents = []
-
-    for teacher in teachers:
-        teacher = teacher.split(' ')
-        with open("input\\{} {} {}.txt".format(*teacher[:3])) as f:
-            documents += re.findall(regular, f.read())
-
-    documents = kwords_annotation(documents, kwords, annotation)
-
-    documents = removing_special_characters(documents)
-
-    documents = partition2(documents, True)
-
-    for i, doc in enumerate(documents):
-        documents[i] = delete_english_word(doc)
-
-    for i, doc in enumerate(documents):
-        documents[i] = delete_numbers(doc)
-
-    for i, doc in enumerate(documents):
-        documents[i] = delete_stop_word(doc, dictionary_of_stop_words)
-
-    del dictionary_of_stop_words
-
-    all_documents = sum_dict(documents.copy())
-
-    all_documents = sort_val(all_documents)
-
-    all_documents = delete_frequency_keyword(all_documents, 1, False)
-
-    for i, doc in enumerate(documents):
-        for word in doc.copy():
-            if all_documents.get(word) is None:
-                documents[i].pop(word)
-
-    Excel = win32com.client.Dispatch('Excel.Application')
-    wb = Excel.Workbooks.Open(os.getcwd() + r'\Results\Result.xlsx')
-    sheet = wb.Worksheets('word-word')
-
-    for i, word1 in enumerate(all_documents):
-        print(i, word1)
-        sheet.Cells(i + 2, 1).value = word1
-        sheet.Cells(1, i + 2).value = word1
-        for j, word2 in enumerate(all_documents):
-            res = 0
-            for doc in documents:
-                if doc.get(word1) is not None and doc.get(word2) is not None and word1 != word2:
-                    res += 1
-            if res > 0:
-                sheet.Cells(i + 2, j + 2).value = res
-    wb.Save()
-    wb.Close()
-    Excel.Quit()
-
-
-def text_clustering(n=30, TF=True, IDF=False, kwords=True, annotation=True):
-
+def doc_initialization(TF=True, IDF=False, kwords=True, annotation=True):
     with open("input\\list_of_teachers.txt") as f:
         teachers = f.read().split('\n')
 
@@ -286,8 +223,8 @@ def text_clustering(n=30, TF=True, IDF=False, kwords=True, annotation=True):
         name_documents.append(name)
 
     for i, name in enumerate(name_documents.copy()):
-        while name in name_documents[i+1:]:
-            pos = name_documents[i+1:].index(name) + i + 1
+        while name in name_documents[i + 1:]:
+            pos = name_documents[i + 1:].index(name) + i + 1
             del name_documents[pos], documents[pos]
 
     documents = removing_special_characters(documents)
@@ -329,6 +266,38 @@ def text_clustering(n=30, TF=True, IDF=False, kwords=True, annotation=True):
             keywords = tfidf(keywords)
         else:
             keywords = tf(keywords)
+
+    return keywords, name_documents, all_keywords
+
+
+def word_word(keywords, all_documents):
+
+    for i, doc in enumerate(keywords):
+        for word in doc.copy():
+            if doc[word] == 0:
+                keywords[i].pop(word)
+
+    Excel = win32com.client.Dispatch('Excel.Application')
+    wb = Excel.Workbooks.Open(os.getcwd() + r'\Results\Result.xlsx')
+    sheet = wb.Worksheets('word-word')
+
+    for i, word1 in enumerate(all_documents):
+        print(i, word1)
+        sheet.Cells(i + 2, 1).value = word1
+        sheet.Cells(1, i + 2).value = word1
+        for j, word2 in enumerate(all_documents):
+            res = 0
+            for doc in keywords:
+                if doc.get(word1) is not None and doc.get(word2) is not None and word1 != word2:
+                    res += 1
+            if res > 0:
+                sheet.Cells(i + 2, j + 2).value = res
+    wb.Save()
+    wb.Close()
+    Excel.Quit()
+
+
+def text_clustering(keywords, name_documents, n=30, TF=True, IDF=False):
 
     number_of_clusters = int(input('Количество кластеров: '))
 

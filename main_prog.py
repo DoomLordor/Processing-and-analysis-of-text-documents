@@ -16,6 +16,8 @@ if __name__ == '__main__' :
         keywords, teachers, teachers_keyword = tasks.initialization()
         tasks.var_k_means(teachers, teachers_keyword)
     elif flag == '3':
+        keywords, name_documets, all_keywords = tasks.doc_initialization()
         tasks.word_word(True)
     elif flag == '4':
-        tasks.text_clustering(annotation=False)
+        keywords, name_documets, all_keywords = tasks.doc_initialization(annotation=False)
+        tasks.text_clustering(keywords, name_documets)
