@@ -222,7 +222,8 @@ def doc_initialization(TF=True, IDF=False, kwords=True, annotation=True):
                 break
         name_documents.append(name)
 
-    for i, name in enumerate(name_documents.copy()):
+    for name in name_documents.copy():
+        i = name_documents.index(name)
         while name in name_documents[i + 1:]:
             pos = name_documents[i + 1:].index(name) + i + 1
             del name_documents[pos], documents[pos]
