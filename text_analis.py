@@ -274,8 +274,7 @@ def k_means(keywords, *means, error_start=False, error_end=False):
             means[i] = arithmetic_mean_dictionary(keywords_in_cluster[i])
         val_1 = val_2
         val_2 = total_square_deviation(keywords, means)
-        for i in range(len(means)):
-            keywords_in_cluster[i] = [k for k in keywords if belonging_of_cluster(k, means) == i]
+        keywords_in_cluster = cluster_distribution(keywords, means)
     if error_start:
         return errors, means
     elif error_start and error_end:
